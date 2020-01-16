@@ -16,7 +16,6 @@ __description__ = '将图片保存到sm.ms'
 
 import requests
 from flask import g
-from utils.tool import rsp
 
 intpl_hooksetting = u'''
 <fieldset class="layui-elem-field">
@@ -68,7 +67,6 @@ def upimg_save(**kwargs):
                 res.update(msg=e.message)
             else:
                 result = r.json()
-                print(result)
                 if result.pop("success", False) is True:
                     data = result["data"]
                     res.update(code=0, src=data.pop("url"))
@@ -76,10 +74,8 @@ def upimg_save(**kwargs):
     return res
 
 
-def upimg_delete(sha, upload_path, filename, basedir):
-    ik = rsp("image", sha)
-    info = g.rc.hgetall(ik)
-    hashId = info.get("hash")
+def upimg_delete(**kwargs):
+    result = kwargs.get("save_result")
+    hashId = result.get("hash")
     if hashId:
-        result = requests.get("https://sm.ms/api/v2/delete/%s" % hashId).json()
-        print(result)
+        requests.get("https://sm.ms/api/v2/delete/%s" % hashId).json()
